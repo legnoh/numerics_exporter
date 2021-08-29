@@ -1,0 +1,43 @@
+name: Upload Numerics JSON to Netlify
+
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+    - cron: '5 * * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pipenv
+        pipenv install
+    - name: setup GCP access
+      uses: google-github-actions/setup-gcloud@master
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        export_default_credentials: true
+    - name: Download JSON from GCS
+      run: gsutil gs://${{ secrets.BUCKET_NAME }}/*.json origin/
+    - name: Run scraping
+      run: pipenv run moneyforward
+    - name: prepare basic auth
+      run: |
+        cat <<EOF > _headers
+        /*
+          Basic-Auth: ${{ secrets.BASIC_USERNAME }}:${{ secrets.BASIC_PASSWORD }}
+        EOF
+    - name: deploy to Netlify
+      uses: jsmrcaga/action-netlify-deploy@v1.6.0
+      with:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        NETLIFY_DEPLOY_TO_PROD: true
