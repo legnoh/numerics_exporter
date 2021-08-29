@@ -30,13 +30,14 @@ jobs:
       run: gsutil cp gs://${{ secrets.BUCKET_NAME }}/*.json origin/
     - name: Run scraping
       run: pipenv run moneyforward
-    - name: prepare basic auth
+    - name: Prepare basic auth
       run: |
-        cat <<EOF > _headers
+        cat <<EOF > ./public/_headers
         /*
           Basic-Auth: ${{ secrets.BASIC_USERNAME }}:${{ secrets.BASIC_PASSWORD }}
         EOF
-    - run: npx netlify-cli deploy
+    - name: Deploy to Netlify
+      run: npx netlify-cli deploy
       env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
