@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
+    - uses: actions/setup-node@v2
     - uses: actions/setup-python@v2
       with:
         python-version: '3.x'
@@ -35,10 +36,7 @@ jobs:
         /*
           Basic-Auth: ${{ secrets.BASIC_USERNAME }}:${{ secrets.BASIC_PASSWORD }}
         EOF
-    - name: deploy to Netlify
-      uses: jsmrcaga/action-netlify-deploy@v1.6.0
-      with:
-        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-        NETLIFY_DEPLOY_TO_PROD: true
-        build_command: "echo 'do nothing'"
+    - run: npx netlify-cli deploy --dir=./dist
+      env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
