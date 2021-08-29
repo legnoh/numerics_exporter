@@ -36,7 +36,7 @@ jobs:
         /*
           Basic-Auth: ${{ secrets.BASIC_USERNAME }}:${{ secrets.BASIC_PASSWORD }}
         EOF
-    - run: npx netlify-cli deploy --dir=./public
+    - run: npx netlify-cli deploy
       env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
