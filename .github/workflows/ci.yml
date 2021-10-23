@@ -1,12 +1,8 @@
-name: Upload Numerics JSON to Netlify
+name: Check Update
 
 on:
-  push:
-    branches:
-      - "main"
+  pull_request:
   workflow_dispatch:
-  schedule:
-    - cron: '5 * * * *'
 
 jobs:
   build:
@@ -28,18 +24,6 @@ jobs:
         project_id: ${{ secrets.GCP_PROJECT_ID }}
         service_account_key: ${{ secrets.GCP_SA_KEY }}
         export_default_credentials: true
-    - name: Download JSON from GCS
-      run: gsutil cp gs://${{ secrets.BUCKET_NAME }}/*.json origin/
     - name: Run scraping
       run: pipenv run moneyforward
-    - name: Prepare basic auth
-      run: |
-        cat <<EOF > ./public/_headers
-        /*
-          Basic-Auth: ${{ secrets.BASIC_USERNAME }}:${{ secrets.BASIC_PASSWORD }}
-        EOF
-    - name: Deploy to Netlify
-      run: npx netlify-cli deploy --prod
-      env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+
