@@ -8,8 +8,5 @@ mypy = "*"
 
 [dev-packages]
 
-[requires]
-python_version = "3.9"
-
 [scripts]
 moneyforward = "python3 moneyforward.py"
